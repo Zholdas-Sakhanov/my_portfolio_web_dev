@@ -1,50 +1,39 @@
-const apiKey = '5f27984f72428787785db8d87a5b5d72';
-const apiUrl = 'https://api.openweathermap.org/data/2.5/weather?units=metric&q='
+const inputBox = document.getElementById("input-box");
+const listContainer = document.getElementById("list-container");
 
-const searchBox = document.querySelector(".search input");
-const searchBtn = document.querySelector(".search button");
-const weatherIcon = document.querySelector(".weather-icon");
-
-async function checkWeather(city) {
-  const response = await fetch(apiUrl + city + `&appid=${apiKey}`);
-
-  if (response.status == 404) {
-    document.querySelector('.error').style.display = 'block';
-    document.querySelector('.weather').style.display = 'none';
+function addTask() {
+  if (inputBox.value === '') {
+    alert("You must write something!");
   } else {
-    const data = await response.json();
+    let li = document.createElement("li");
+    li.textContent = inputBox.value;
+    listContainer.appendChild(li);
 
-    document.querySelector('.city').textContent = data.name;
-    document.querySelector('.temp').textContent = Math.round(data.main.temp) + "°c";
-    document.querySelector('.humidity').textContent = data.main.humidity + "%";
-    document.querySelector('.wind').textContent = data.wind.speed + " km/h";
-
-
-    switch (data.weather[0].main) {
-      case "Clouds":
-        weatherIcon.src = 'img/clouds.png';
-        break
-      case "Clear":
-        weatherIcon.src = 'img/clear.png';
-        break
-      case "Rain":
-        weatherIcon.src = 'img/rain.png';
-        break
-      case "Drizzle":
-        weatherIcon.src = 'img/drizzle.png';
-        break
-      case "Mist":
-        weatherIcon.src = 'img/mist.png';
-        break
-    }
-    document.querySelector('.weather').style.display = 'block';
-    document.querySelector('.error').style.display = 'none';
+    let span = document.createElement("span");
+    span.textContent = "\u00d7";
+    li.appendChild(span)
   }
-
+  inputBox.value = "";
+  saveData();
 }
 
-searchBtn.addEventListener("click", () => {
-  checkWeather(searchBox.value);
-})
+listContainer.addEventListener("click", function (e) {
+  if (e.target.tagName === "LI") {
+    e.target.classList.toggle("checked");
+    saveData();
+  }
+  else if (e.target.tagName === "SPAN") {
+    e.target.parentElement.remove();
+    saveData();
+  }
+}, false);
 
+function saveData() {
+  localStorage.setItem("data", listContainer.innerHTML);
+}
 
+function showTask(){
+  listContainer.innerHTML = localStorage.getItem("data");
+}
+
+showTask();
